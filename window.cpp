@@ -3,7 +3,6 @@
 
 //DEFAULT CONSTRUCTOR
 Window::Window() {
-
 }
 
 //CONSTRUCTOR w/ PARAMETERS
@@ -75,27 +74,12 @@ void Window::init() {
 		glm::vec3(0,1,0)  // Head is up (set to 0,-1,0 to look upside-down)
 	);
 
-	/*glGenBuffers(1, &vertexbuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(cubeData), cubeData, GL_DYNAMIC_DRAW);
-
-	glGenBuffers(1, &colorbuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, colorbuffer);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(colorData), colorData, GL_STATIC_DRAW);*/
+	position = vec3( 5, 5, 5 );
 	
-	glGenBuffers(1, &vertexbuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-	glBufferData(GL_ARRAY_BUFFER, 36, mesh.getVertexData(), GL_DYNAMIC_DRAW);
-
-	glGenBuffers(1, &colorbuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, colorbuffer);
-	glBufferData(GL_ARRAY_BUFFER, 36, mesh.getColorData(), GL_DYNAMIC_DRAW);
-	
-
-	position = vec3( 0, 0, 5 );
-	
-	std::cout << sizeof(cubeData) << '\n';
 }
+
+#include <stdint.h>
+#include <stddef.h>
 
 //LOOP
 //Desc. draw loop for window
@@ -104,26 +88,39 @@ void Window::draw() {
     if(!initialized)
         init();
 
-	//tmp
-	int size = 0;
-	int w = 50, h = 50;
-	float x = 0, z = 0, y=0, gap = 15.f;
+	Vertex v1(-1.f, -1.f, 0.f, 1.f, 0.5f, 1.f);
+	Vertex v2(1.f, -1.f, 0.f, 0.7f, 0.2f, 0.8f);
+	Vertex v3(0.f, 1.f, 0.f, 0.3f, 0.6f, 1.f);
+	
+	db.addVertex(v1);
+	db.addVertex(v2);
+	db.addVertex(v3);
+	
+	Vertex v4(-10.f, -10.f, 10.f, 1.f, 0.5f, 1.f);
+	Vertex v5(10.f, -10.f, 10.f, 0.7f, 0.2f, 0.8f);
+	Vertex v6(10.f, 10.f, 10.f, 0.3f, 0.6f, 1.f);
+	
+	db.addVertex(v4);
+	db.addVertex(v5);
+	db.addVertex(v6);
 
-	for(int i=0; i<w; i++) {
-		for(int j=0; j<h; j++) {
-		cubes.push_back(Cube());
-		cubes[size].setPosition(i * gap, 0, j * gap);
-		size++;
-		}
-	}
+	loadModel("car.obj", db);
+	
+	glGenBuffers(1, &vertexbuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
+	glBufferData(GL_ARRAY_BUFFER, db.getVertexSize(), db.getVertexData(), GL_DYNAMIC_DRAW);
+
+	glGenBuffers(1, &colorbuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, colorbuffer);
+	glBufferData(GL_ARRAY_BUFFER, db.getColorSize(), db.getColorData(), GL_DYNAMIC_DRAW);
 
 	do	{
+
 
 		//fps
 		deltaTime = glfwGetTime() - lastTime;
 		lastTime = glfwGetTime();
-		std::cout << "fps: " << 1.0f/deltaTime << '\n';
-
+		//printf("fps:%.0f\n",(1.0f/deltaTime));
 		input();
         
 		// Clear the screen
@@ -142,25 +139,13 @@ void Window::draw() {
 		glBindBuffer(GL_ARRAY_BUFFER, colorbuffer);
 		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
 
+	
+		//draw	
+		MVP = mesh.getModelViewProjection(projection, camera);
+		glUniformMatrix4fv(matrixId, 1, GL_FALSE, &MVP[0][0]);
+		glDrawArrays(GL_TRIANGLES, 0, db.getN_Vertices());
 		
-		//MVP = cubes[0].getModelViewProjection(projection, camera);
-		//glUniformMatrix4fv(matrixId, 1, GL_FALSE, &MVP[0][0]);
-		
-		//glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-		//glBufferData(GL_ARRAY_BUFFER, 36, mesh.getVertexData(), GL_DYNAMIC_DRAW);
-
-		//glDrawArrays(GL_TRIANGLES, 0, 60);
-		
-		for(int i=0; i<size; i++) {
-			
-			cubes[i].move(glm::vec3(0, sin(glfwGetTime() + i)/7.f, 0));
-			MVP = cubes[i].getModelViewProjection(projection, camera);
-			glUniformMatrix4fv(matrixId, 1, GL_FALSE, &MVP[0][0]);
-			
-			glDrawArrays(GL_TRIANGLES, 0, cubes[i].getN_Vertices());
-		}
-
-		
+		//disable buffers
 		glDisableVertexAttribArray(0);
 		glDisableVertexAttribArray(1);
 
@@ -211,13 +196,13 @@ void Window::input() {
 		
 		if(glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
 			
-			for(int i=0; i<9; i++)
-				cubeData[i] -= 1;
+		//	for(int i=0; i<9; i++)
+		//		cubeData[i] -= 1;
 			//glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
 			//glBufferData(GL_ARRAY_BUFFER, sizeof(cubeData), cubeData, GL_DYNAMIC_DRAW);
 		}else if(glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
-			for(int i=0; i<9; i++)
-				cubeData[i] += 1;
+		//	for(int i=0; i<9; i++)
+		//		cubeData[i] += 1;
 			//glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
 			//glBufferData(GL_ARRAY_BUFFER, sizeof(cubeData), cubeData, GL_DYNAMIC_DRAW);
 		}
@@ -240,6 +225,23 @@ void Window::input() {
 	vec3 up = cross( right, direction );
     camera = lookAt(position, position+direction, up);
 
+}
+
+void Window::loadModel(std::string file, Drawbuffer& db) {
+	std::vector<glm::vec3> vertices;
+	std::vector<glm::vec2> uvs;
+	std::vector<glm::vec3> normals; // Won't be used at the moment.
+	bool res = loadOBJ("car.obj", vertices, uvs, normals);
+
+	for(int i=0; i<vertices.size(); i++) {
+		float r = ((double) rand() / (RAND_MAX));
+		float g = ((double) rand() / (RAND_MAX));
+		float b = ((double) rand() / (RAND_MAX));
+ 
+		//std::cout << r << ' ' << g << ' ' << b << '\n';
+ 		Vertex v(vertices[i][0], vertices[i][1], vertices[i][2], r, g, b);
+		db.addVertex(v);
+	}
 }
 
 //LOAD SHADERS

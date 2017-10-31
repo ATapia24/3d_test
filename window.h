@@ -15,6 +15,8 @@
 #include "cube.h"
 #include "quad.h"
 #include "mesh.h"
+#include "drawbuffer.h"
+#include "objloader.hpp"
 
 using namespace glm;
 
@@ -42,7 +44,7 @@ class Window {
         void input();
         float horizontalAngle = 3.14159265359, verticalAngle = 0.0f;
         float mouseSpeed = 0.001f;
-        float moveSpeed = 1.f;
+        float moveSpeed = 0.3f;
         std::vector<Cube> cubes;
 		std::vector<Quad> quads;
 
@@ -53,8 +55,10 @@ class Window {
         GLuint vertexbuffer;
         GLuint colorbuffer;
 		
+
+		Mesh mesh;
+		Drawbuffer db;
 		float amplitude = 7.f;
 		float amp_rate = 0.1f;
-		
-		Mesh mesh;
+		void loadModel(std::string file, Drawbuffer& db);
 };
