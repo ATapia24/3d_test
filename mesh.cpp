@@ -1,4 +1,4 @@
-#include "Mesh.h"
+#include "mesh.h"
 
 Mesh::Mesh() {
     transformMat = glm::mat4(1.0f);

@@ -1,5 +1,5 @@
 //WINDOW CLASS IMPLEMENTATION FILE
-#include "Window.h"
+#include "window.h"
 
 //DEFAULT CONSTRUCTOR
 Window::Window() {

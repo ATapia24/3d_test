@@ -1,4 +1,4 @@
-#include "Drawbuffer.h"
+#include "drawbuffer.h"
 
 //CONSTRUCTOR
 Drawbuffer::Drawbuffer() {

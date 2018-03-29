@@ -1,4 +1,4 @@
-#include "Cube.h"
+#include "cube.h"
 
 Cube::Cube() {
     transformMat = glm::mat4(1.0f);
